@@ -1,0 +1,19 @@
+{
+  "name": "appiserver",
+  "version": "1.0.0",
+  "description": "Get the viewed member details",
+  "scripts": {
+    "start": "nodemon index.js",
+	"test": "mocha index.js"
+  },
+  "engines": {
+    "node": ">= 5.4.1"
+  },
+  "author": "Sathrak Paldurai K",
+  "dependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.1"
+  }
+}
