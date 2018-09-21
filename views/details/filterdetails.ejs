@@ -1,0 +1,37 @@
+<%- include ../header.ejs %>
+<div class="container-fluid">
+
+    <%if(data){%>
+    <% if((data[0].Info).length > 0){%>
+    <table class="table table-bordered">
+        <thead class="alert alert-warning">
+             <tr>
+                <th>Date</th>
+                <th>MailerName</th>
+                <th>MailerID</th>
+                <th>TotalSent</th>
+                <th>TotalCooked</th>
+                <th>CookedDuration</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+             <% for(var i=0;i< data.length;i++){ %>
+            <tr>
+                 <td><%= (data[i].Info[0]['Date']).substr(0,10)%></td>
+                  <td><%= (data[0].Info[0]['TotalSent']).substr(0,10)%></td>
+                   <td><%= (data[i]._id)%></td>
+                    <td><%= (data[0].Info[0]['TotalSent']).substr(0,10)%></td>
+                     <td><%= (data[0].Info[0]['TotalCooked']).substr(0,10)%></td>
+                      <td><%= (data[0].Info[0]['CookedDuration']).substr(0,10)%></td>
+        </tr>
+        <% }%>
+        </tbody>
+    </table>
+    <%}%>
+    <%}%>
+    <div id="render"></div>
+</div>
+<%- include ../footer.ejs %> 
+
+</script>

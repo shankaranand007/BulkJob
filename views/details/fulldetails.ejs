@@ -1,0 +1,169 @@
+<%- include ../header.ejs %>
+<div class="container-fluid">
+<%= JSON.stringify(data[0].Info)%>
+    <%if(data){%>
+    <% if((data[0].Info).length > 0){%>
+    <table class="table table-bordered">
+        <thead class="alert alert-warning">
+            <tr>
+                <th>Date</th>
+                <th>TotalSent</th>
+                <th>TotalCooked</th>
+                <th>failure</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+           <% for(var cs in data[0].Info){ %>
+                <tr>
+                    <!-- <td><%= (data[0].Info[cs]['Date']).substr(0, 10) %></td> -->
+                    <td><%= cs %></td>
+                    <td><a href="#" data-toggle="modal" data-target="#count<%= cs %>"><%= data[0].Info[cs]['TotalSent'] %> </a></td>
+                    <td><a href="#" data-toggle="modal" data-target="#count<%= cs %>"><%=  data[0].Info[cs]['TotalCooked'] %> </a></td>
+                      <!--  <td><a href="#" data-toggle="modal" data-target="#count' +<% cs %> + '-' + 'cooked' + '"><%#  value[0].Info[cs]['overallcooked'] %> </a></td> -->
+                    <td><a href="#" data-toggle="modal" data-target="#count<%= cs %>"><%= data[0].Info[cs]['overallfailure'] %> </a></td>
+                    <% for(var dt in data[0].Info[cs]){ %>
+                       <% if (dt != 'Date') { %>
+
+                            <div class="modal fade" id="count<%= cs %>"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document"><div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <h5 class="modal-title" id="countLabel"><%= dt%></h5>
+                                        <!-- <h5 class="modal-title" id="countLabel"><%= dt %> Info</h5> -->
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                                        <!-- <br> -->
+                                        <div class="modal-body">
+                                        <% for (var mss in data[0].Info[cs][dt]) { %>
+                                        
+                                                <p><span class="font-weight-bold"><%= mss %> :</span>
+                                                    <span>
+                                                    <%= data[0].Info[cs][dt][mss] %></span></p>
+                                                    <!-- data[0].Info[cs][dt][mss] -->
+                                        <% } %>
+                                    </div>
+                                     <div class="modal-footer">
+                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                     </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+           <% } %>
+                    <% } %>
+                </tr>
+           <% } %>
+        </tbody>
+    </table>
+    <%}%>
+    <%}%>
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <p class="font-weight-bold">Select the date range</p>
+            </div>
+            <div class="col-3">
+                <input type="text" id="daterange" class="form-control"/>
+            </div>
+            <div class="col-3">
+                <button type="button" class="btn btn-success" id="datesubmit">Submit</button>
+            </div>
+        </div>
+    </div>
+    <div id="render"></div>
+</div>
+<%- include ../footer.ejs %>    
+<script type="text/javascript">
+    $(function () {
+
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+            $('#daterange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        }
+
+        $('#daterange').daterangepicker({
+            setDate: new Date(),
+            startDate: start,
+            endDate: end,
+            locale: {
+                format: 'YYYY/MM/DD'
+            },
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
+    $(document).ready(function () {
+        $("#datesubmit").on('click', function () {
+            var getid = (window.location.href).split('?');
+            getid = getid[1].split('=');
+            getid = getid[1];
+            var dateval = $('#daterange').val().split('-');
+            var data = {};
+            data.Fromdate = dateval[0].replace(/\//g, '-').trim();
+            data.Todate = dateval[1].replace(/\//g, '-').trim();
+            data.id = getid;
+            $.ajax({
+                url: '/moreinfo',
+                type: 'POST',
+                data: data,
+                success: function (res) {
+                    render(res);
+                },
+                error: function (error) {
+                    console.log('error' + JSON.stringify(error));
+                }
+            });
+        });
+    });
+    function render(value) {
+        var renhtml = '<table class="table table-bordered" id="reportTable"><thead  class="alert alert-success"><tr><th>Date</th><th>TotalSent</th><th>TotalCooked</th><th>Failure</th>';
+        if(value.length > 0){
+        var data = value[0].Info[0];
+        
+        
+            
+        renhtml += '</tr></thead><tbody>';
+
+        for (var cs in value[0].Info) {
+            renhtml += '<tr>';
+
+            renhtml += '<td>' + (value[0].Info[cs]['Date']).substr(0, 10) + '</td>';
+            renhtml += '<td><a href="#" data-toggle="modal" data-target="#count' + cs + '-' + 'success' + '">' + value[0].Info[cs]['TotalSent'] + ' </a></td>';
+            renhtml += '<td><a href="#" data-toggle="modal" data-target="#count' + cs + '-' + 'cooked' + '">' + value[0].Info[cs]['TotalCooked'] + ' </a></td>';
+            renhtml += '<td><a href="#" data-toggle="modal" data-target="#count' + cs + '-' + 'failure' + '">' + value[0].Info[cs]['overallfailure'] + ' </a></td>';
+            for (var dt in value[0].Info[cs]) {
+                if (dt != 'Date') {
+                    renhtml += '<div class="modal fade" id="count' + cs + '-' + dt + '"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="countLabel">' + dt + ' Info</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body">';
+                    for (var mss in value[0].Info[cs][dt]) {
+                        renhtml += '<p><span class="font-weight-bold">' + mss + ' :</span><span>' + value[0].Info[cs][dt][mss] + '</span></p>';
+                    }
+                    renhtml += '</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div></div></div></div>';
+                }
+            }
+            renhtml += '</tr>';
+        }
+        renhtml += '</tr></tbody></table>';
+        }else{
+            renhtml = '<div>No Result Found</div>';
+        }
+        $('#render').html(renhtml);
+        $('#reportTable').DataTable({
+            responsive: true
+        });
+    }
+
+
+
+</script>

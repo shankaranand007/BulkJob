@@ -1,0 +1,236 @@
+<%- include header.ejs %>
+<div class="row" id="p">
+    <div class="col-md-6"></div>
+    <div class="col-md-6" >
+        <div class="row">
+        <div class="col-md-4" >
+            <div class="form-group">
+                <label>From</label>
+                <input type="date" name="from" id="from" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-4" >
+                <div class="form-group">
+                <label>To</label>
+                <input type="date" name="to" id="to" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-4" >
+               <div class="form-group">
+               <button class="btn btn-secondary" id="Search_filter" style="margin-top: 31px;">Search </button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <table class="table table-bordered table-responsive" id="dataTables">
+        <thead class="alert alert-success">
+            <tr>
+                <th id="1">Mailer Name</th>
+                <th id="2">Mailer ID</th>
+                <th id="3">BulkJob Frequency</th>
+                <th id="4">BulkJob Type</th>
+                <th id="5">Cooking Host</th>
+                <th id="6">Sending Host</th>
+                <th id="7">Cooking Source</th>
+                <th id="8">Sending Source</th>
+                <th id="9">Cooking Scheduled Time</th>
+                <th id="10">Sending Scheduled Time</th>
+                <th id="11">Statistics</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(locals.data){ %>
+            <% if(data.length>0){ %>
+            <% data.forEach(function(val){%>
+            <tr>
+                <td><a href="/fulldetails/?id=<%- val.id %>"><%= val.name %></a></td>
+                <td><a href="/fulldetails/?id=<%- val.id %>"><%= val.id %></a></td>
+                <td><%= val.bkfreq%></td>
+                <td><%= val.type%></td>
+                <td><% (val.cookinginfo).forEach(function(value){%>
+                    <% for (var ck in value){ %>
+                    <p><a href='#' data-toggle="modal" data-target="#cookinfo<%= ck %>"><%= ck%></a></p>
+                    <!--                    <a href='#' data-toggle="modal" data-target="#cookinfo<%= ck %>">More</a>-->
+                    <div class="modal fade" id="cookinfo<%= ck %>"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cookinfoLabel"><%= ck %> Info</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <% for (var mck in value[ck]){ %>
+                                    <p><span class="font-weight-bold"><%= mck %> :</span>
+                                        <span><%= value[ck][mck] %></span></p>
+                                    <%}%>
+                                    <p><span class="font-weight-bold">Filename :</span><span><%= val.cfn %></span></p>
+                                    <p><span class="font-weight-bold">Instances :</span><span><%= val.ci %></span></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <%}%>
+                    <% });%>
+                </td> 
+                <td>
+                    <% (val.sendinginfo).forEach(function(value){%>
+                    <% for (var sk in value){ %>
+                    <p><a href='#' data-toggle="modal" data-target="#sendinfo<%= sk %>"><%= sk %></a></p>
+                    <div class="modal fade" id="sendinfo<%= sk %>"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cookinfoLabel"><%= sk %> Info</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <% for (var msk in value[sk]){ %>
+                                    <p><span class="font-weight-bold"><%= msk %> :</span>
+                                        <span><%= value[sk][msk] %></span></p>
+                                    <%}%>
+                                    <p><span class="font-weight-bold">Filename :</span><span><%= val.sfn %></span></p>
+                                    <p><span class="font-weight-bold">Instances :</span><span><%= val.si %></span></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <%}%>
+                    <% });%>
+                </td>
+                <td>
+                    <% (val.cooksrc).forEach(function(value){%>
+                    <% for (var cs in value){ %>
+                    <p><a href='#' data-toggle="modal" data-target="#cooksrc<%= cs %>"><%= cs %></a></p>
+                    <div class="modal fade" id="cooksrc<%= cs %>"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cooksrcLabel"><%= cs %> Info</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <% for (var mcs in value[cs]){ %>                                                
+                                    <p><span class="font-weight-bold"><%= mcs %> :</span>
+                                        <span><%= value[cs][mcs] %></span></p>                                                  
+                                    <%}%>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%}%>
+                    <% });%>
+                </td>
+                <td>
+                    <% (val.sendsrc).forEach(function(value){%>
+                    <% for (var ss in value){ %>
+                    <p><a href='#' data-toggle="modal" data-target="#sendsrc<%= ss %>"><%= ss %> </a></p>
+                    <div class="modal fade" id="sendsrc<%= ss %>"  role="dialog" aria-labelledby="cookinfoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="sendsrcLabel"><%= ss %> Info</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <% for (var mss in value[ss]){ %>
+                                    <p><span class="font-weight-bold"><%= mss %> :</span>
+                                        <span><%= value[ss][mss] %></span></p>
+                                    <%}%>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%}%>
+                    <% });%>
+                </td>
+                <td>
+                    <p><span class="font-weight-bold">Start Time :</span><span><%= val.cst %></span></p>
+                    <p><span class="font-weight-bold">Avg End Time :</span><span><%= val.cat %></span></p>
+                    <p><span class="font-weight-bold">Avg Time Window :</span><span><%= val.ctw %></span></p>
+                </td>
+                <td>
+                    <p><span class="font-weight-bold">Start Time :</span><span><%= val.sst %></span></p>
+                    <p><span class="font-weight-bold">Avg End Time :</span><span><%= val.sat %></span></p>
+                    <p><span class="font-weight-bold">Avg Time Window :</span><span><%= val.stw %></span></p>
+                </td>
+                <td><a href="/fulldetails/?id=<%- val.id %>"> View Stats </a></td>
+            </tr>
+            <%}); }else{%>
+            <tr>
+                <td colspan="2">No Records Found</td>
+            </tr>
+            <% }}else{%>
+            <tr>
+                <td colspan="2">No Records Found</td>
+            </tr>  
+            <%}%>
+        </tbody>
+    </table>
+</div>
+<%- include footer.ejs %> 
+<script type="text/javascript">
+         $(document).ready(function () {
+        $("#Search_filter").on('click', function () {
+                console.log("begain");
+                var from = $("#from").val();
+                var to = $("#to").val();
+                if(from == "" || to == ""){
+                    alert("Please enter the input value")
+                }else{
+                    var data = JSON.stringify({'from':from,'to':to});
+                    window.location.href = "http://192.168.20.206:8686/filter?date="+data;
+                        // var data = {'from':from,'to':to};
+                        // $.ajax({
+                        // url: '/filter',
+                        // type: 'POST',
+                        // data: data,
+                        // success: function (res) {
+                        //      // $("#1").html("Marketting Document/URL");
+                        //      // $("#p").hide();
+                        //      $("#3").html("CookingStartTime");
+                        //      $("#4").hide();
+                        //      $("#5").hide();
+                        //      $("#6").hide();
+                        //      $("#7").hide();
+                        //      $("#8").hide();
+                        //      $("#9").hide();
+                        //      $("#10").hide();
+                        //      $("#11").hide();
+                           
+                        // console.log(res)
+                        // },
+                        // error: function (error) {
+                        // console.log('error' + JSON.stringify(error));
+                        // }
+                        // });
+                }
+
+
+        });
+    });
+    </script>
